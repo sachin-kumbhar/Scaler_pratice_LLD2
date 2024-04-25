@@ -1,11 +1,11 @@
 package com.example.productservice_1.controllers;
 
+import com.example.productservice_1.dtos.CreateProductRequestDto;
 import com.example.productservice_1.models.Product;
 import com.example.productservice_1.services.ProductService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class ProductController {
@@ -16,13 +16,20 @@ public class ProductController {
         this.productService = productService;
     }
     @PostMapping("/products")
-    public void createProduct() {
-        // Break for 5 minutes: 10:38 -> 10:43
+    public Product createProduct(@RequestBody CreateProductRequestDto productRequestDto) {
+        return productService.createProduct(
+                productRequestDto.getTitle(),
+                productRequestDto.getDescription(),
+                productRequestDto.getImage(),
+                productRequestDto.getCategory(),
+                productRequestDto.getPrice()
+        );
     }
 
     @GetMapping("/products")
-    public void getAllProducts() {
+    public List<Product> getAllProducts() {
 
+        return productService.getAllProducts();
     }
 
     // Jackson

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service // creates the object and put it into constructor of ProductController class
 public class FakeStoreProductService implements ProductService{
     private RestTemplate restTemplate ;
@@ -34,4 +37,33 @@ public class FakeStoreProductService implements ProductService{
         return product;
 
     }
+
+    @Override
+    public Product createProduct(String title, String description, String image, String category, double price) {
+        FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
+        fakeStoreProductDto.setCategory(category);
+        fakeStoreProductDto.setDescription(description);
+        fakeStoreProductDto.setPrice(price);
+        fakeStoreProductDto.setImage(image);
+        fakeStoreProductDto.setTitle(title);
+
+        FakeStoreProductDto response = restTemplate
+                .postForObject("https://fakestoreapi.com/products",
+                        fakeStoreProductDto, FakeStoreProductDto.class);
+        return response.toProduct();
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+        FakeStoreProductDto[] response =
+                restTemplate.getForObject("https://fakestoreapi.com/products/",
+        FakeStoreProductDto[].class);
+        List<Product> products = new ArrayList<>();
+        for(FakeStoreProductDto fakeStoreProductDto : response)
+        {
+            products.add(fakeStoreProductDto.toProduct());
+        }
+        return products;
+    }
 }
+
