@@ -3,6 +3,8 @@ package com.example.productservice_1.services;
 import com.example.productservice_1.dtos.FakeStoreProductDto;
 import com.example.productservice_1.models.Category;
 import com.example.productservice_1.models.Product;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,10 +21,17 @@ public class FakeStoreProductService implements ProductService{
 
     @Override
     public Product getSingleProduct(Long id) {
-        FakeStoreProductDto fakeStoreProductDto = restTemplate
-                .getForObject(
-                        "https://fakestoreapi.com/products/" + id,
-                        FakeStoreProductDto.class);
+//        FakeStoreProductDto fakeStoreProductDto = restTemplate
+//                .getForObject(
+//                        "https://fakestoreapi.com/products/" + id,
+//                        FakeStoreProductDto.class);
+
+        ResponseEntity<FakeStoreProductDto> responseEntity = restTemplate.getForEntity(
+                "https://fakestoreapi.com/products/" + id,
+                FakeStoreProductDto.class);
+
+
+        FakeStoreProductDto fakeStoreProductDto = responseEntity.getBody();
 
         Product product = new Product();
         product.setId(fakeStoreProductDto.getId());
@@ -33,9 +42,8 @@ public class FakeStoreProductService implements ProductService{
         Category category = new Category();
         category.setTitle(fakeStoreProductDto.getCategory());
         product.setCategory(category);
-//        product.setPrice(fakeStoreProductDto.getPrice());
-        return product;
 
+        return product;
     }
 
     @Override
@@ -49,21 +57,24 @@ public class FakeStoreProductService implements ProductService{
 
         FakeStoreProductDto response = restTemplate
                 .postForObject("https://fakestoreapi.com/products",
-                        fakeStoreProductDto, FakeStoreProductDto.class);
+                        fakeStoreProductDto,
+                        FakeStoreProductDto.class);
+
+
         return response.toProduct();
     }
 
     @Override
     public List<Product> getAllProducts() {
         FakeStoreProductDto[] response =
-                restTemplate.getForObject("https://fakestoreapi.com/products/",
-        FakeStoreProductDto[].class);
+                restTemplate.getForObject("https://fakestoreapi.com/products",
+                        FakeStoreProductDto[].class);
+
         List<Product> products = new ArrayList<>();
-        for(FakeStoreProductDto fakeStoreProductDto : response)
-        {
+        for(FakeStoreProductDto fakeStoreProductDto: response) {
             products.add(fakeStoreProductDto.toProduct());
         }
+
         return products;
     }
 }
-
